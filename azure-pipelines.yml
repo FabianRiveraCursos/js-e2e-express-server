@@ -1,24 +1,25 @@
 resources:
   containers:
-  - container: nginx
-    image: nginx
-    ports:
-    - 8080:80
-    env:
-      NGINX_PORT: 80
-  - container: redis
-    image: redis
-    ports:
-    - 6379
+  - container: my_container
+    image: ubuntu:22.04
+  - container: pg15
+    image: postgres:15
+  - container: pg14
+    image: postgres:14
 
 pool:
   vmImage: 'ubuntu-latest'
 
-services:
-  nginx: nginx
-  redis: redis
+strategy:
+  matrix:
+    postgres15:
+      postgresService: pg15
+    postgres14:
+      postgresService: pg14
 
+container: my_container
+
+services:
+  postgres: $[ variables['postgresService'] ]
 steps:
-- script: |
-    curl localhost:8080
-    echo $AGENT_SERVICES_REDIS_PORTS_6379
+- script: printenv
